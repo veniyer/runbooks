@@ -1,0 +1,41 @@
+#Generate self-signed ssl cert
+openssl req -newkey rsa:4096 \
+            -x509 \
+            -sha256 \
+            -days 3650 \
+            -nodes \
+            -out httpd.crt \
+            -keyout httpd.key
+
+# In httpd.conf comment port 80
+#Listen 80
+# Add ssl module. Make sure that file is in the folder and path is correct
+LoadModule ssl_module /etc/httpd/modules/mod_ssl.so
+
+# If ssl module is not present then install it
+sudo yum install mod_ssl
+
+#Also comment out 443 since you will have it in ssl.conf
+#Listen 443
+
+#Add the following entry
+<VirtualHost *:443>
+    ServerName www.SampleHttpd.com
+    SSLEngine on
+    SSLCertificateFile "/etc/httpd/httpd.crt"
+    SSLCertificateKeyFile "/etc/httpd/httpd.key"
+</VirtualHost>
+
+In ss.conf
+add this line of NameVirtualHost and comment SSL Virtual Host Context
+# Use name-base virtual hosting
+NameVirtualHost *:443
+
+##
+## SSL Virtual Host Context
+##
+
+Add this line if it is not present
+<VirtualHost _default_:443>
+
+Restart the server
